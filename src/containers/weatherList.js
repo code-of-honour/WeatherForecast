@@ -1,17 +1,50 @@
+import _ from 'lodash'
 import React, {Component} from 'react'
 import { connect } from 'react-redux'
+import Chart from '../components/chart'
+import GoogleMap from '../components/googleMaps'
 
 class WeatherList extends Component {
+  renderWeather(cityData) {
+    const name = cityData.city.name
+    const temps = _.map(cityData.list.map(weather => weather.main.temp), (temp) => temp - 273)
+    const pressure = cityData.list.map(weather => weather.main.pressure)
+    const humidity = cityData.list.map(weather => weather.main.humidity)
+    const { lon, lat } = cityData.city.coord
+
+    console.log(temps)
+
+    return (
+      <tr key={name}>
+        <td>
+          <GoogleMap lon={lon} lat={lat} />
+        </td>
+        <td>
+          <Chart data={temps} color="purple" type="avg" units="ºC" />
+        </td>
+        <td>
+          <Chart data={pressure} color="green" type="avg" units="hPa" />
+        </td>
+        <td>
+          <Chart data={humidity} color="blue" type="avg" units="%" />
+        </td>
+      </tr>
+    )
+  }
+
   render() {
     return (
       <table className="table table-hover">
         <thead>
           <tr>
             <th>City</th>
+            <th>Temperature (ºC)</th>
+            <th>Pressure (hPa)</th>
+            <th>Humidity (%)</th>
           </tr>
         </thead>
         <tbody>
-
+          {this.props.weather.map(this.renderWeather)}
         </tbody>
       </table>
     )
